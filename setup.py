@@ -4,7 +4,7 @@ from setuptools import find_packages
 with open('requirements.txt') as f:
     content = f.readlines()
     requirements = [x.strip() for x in content if 'git+' not in x]
-
+print("hello setup")
 setup(
     name='estimator',
     version='0.0.0',

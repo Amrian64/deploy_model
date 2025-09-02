@@ -33,8 +33,9 @@ def get_data_selected(data, nom_commune = "Bordeaux",
     data = data[data["type_local"] == type_local]
     data = data[data["nature_mutation"] == nature_mutation]
 
-    data = data.dropna(subset=["longitude","latitude", "surface_reelle_bati"])
+    data = data.dropna(subset=["longitude","latitude", "surface_reelle_bati", "valeur_fonciere"])
     data["prix_m2"] = data["valeur_fonciere"] / data["surface_reelle_bati"]
+    # data["prix_m2"] = data.astype({"prix_m2": int})
     return data
 
 def get_gold_data(
@@ -50,4 +51,16 @@ def get_gold_data(
         type_local = type_local,
         nature_mutation = nature_mutation)
 
+    data = filtre_seuil(data)
+
     return data
+
+def filtre_seuil(gold_data):
+    seuil_filtre_med = int(gold_data[["prix_m2"]].median().values[0])
+    seuil_filtre_max = int(gold_data[["prix_m2"]].quantile(q = .80).values[0])
+    seuil_filtre_min = int(gold_data[["prix_m2"]].quantile(q = .01).values[0])
+    gold_data = gold_data[gold_data["prix_m2"] >= seuil_filtre_min]
+    gold_data = gold_data[gold_data["prix_m2"] <= seuil_filtre_max]
+    return gold_data
+
+
